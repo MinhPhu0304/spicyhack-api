@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"math/rand"
 	"net/http"
-	"time"
+
+	"spicyhack/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,8 +14,7 @@ var databases = []string{"PostgreSQL", "MySQL", "MongoDB", "DynamoDB", "SQLite",
 
 func main() {
 	router := gin.Default()
-	router.GET("/spicy", serveGETPing)
-	fmt.Println("Finish set up router")
+	router.GET("/", rootHandler)
 	router.Run(":3000")
 }
 
@@ -26,20 +24,15 @@ type Architecture struct {
 	Database string `json:"database"`
 }
 
-func serveGETPing(context *gin.Context) {
+func rootHandler(context *gin.Context) {
 	result := Architecture{
-		Frontend: frontends[getRandomIndex(len(frontends))],
-		Backend:  backends[getRandomIndex(len(backends))],
-		Database: databases[getRandomIndex(len(databases))],
+		Frontend: frontends[utils.GetRandomIndex(len(frontends))],
+		Backend:  backends[utils.GetRandomIndex(len(backends))],
+		Database: databases[utils.GetRandomIndex(len(databases))],
 	}
 
 	context.JSON(http.StatusOK, gin.H{
 		"message":      "OK",
 		"architecture": result,
 	})
-}
-
-func getRandomIndex(max int) int {
-	rand.Seed(time.Now().UnixNano())
-	return rand.Intn(max)
 }
